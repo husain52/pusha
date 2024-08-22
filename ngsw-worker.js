@@ -2149,14 +2149,24 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
                 yield this.handleMessage(data, event.source);
             }))());
         }
-        onPush(msg) {
-            // Push notifications without data have no effect.
-            if (!msg.data) {
-                return;
-            }
-            // Handle the push and keep the SW alive until it's handled.
-            msg.waitUntil(this.handlePush(msg.data.json()));
-        }
+       onPush(msg) {
+    // Push notifications without data have no effect.
+    if (!msg.data) {
+        console.log('Push message received with no data.');
+        return;
+    }
+
+    try {
+        // Parse the data as JSON
+        const data = msg.data.json();
+        
+        // Handle the push and keep the SW alive until it's handled.
+        msg.waitUntil(this.handlePush(data));
+    } catch (error) {
+        console.error('Error parsing push message data as JSON:', error);
+    }
+}
+
         onClick(event) {
             // Handle the click event and keep the SW alive until it's handled.
             event.waitUntil(this.handleClick(event.notification, event.action));
