@@ -2150,24 +2150,14 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
             }))());
         }
 
-        onPush(msg) {
-    if (!msg.data) {
-        console.log('Push message received without any data.');
-        return;
-    }
-
-    try {
-        // Decode Base64URL
-        const textData = msg.data.text();
-        const decodedData = base64url.decode(textData); // Decode the base64url string
-        const data = JSON.parse(decodedData);
-
-        // Keep the service worker alive until the push notification is fully handled
-        msg.waitUntil(this.handlePush(data));
-    } catch (error) {
-        console.error('Error parsing push message data:', error);
-    }
-}
+      onPush(msg) {
+            // Push notifications without data have no effect.
+            if (!msg.data) {
+                return;
+            }
+            // Handle the push and keep the SW alive until it's handled.
+            msg.waitUntil(this.handlePush(msg.data.json()));
+        }
 
 
 
